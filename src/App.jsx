@@ -1,9 +1,11 @@
+import { useState, useEffect } from "react";
 import NoteGrid from "./components/NoteGrid";
 import SearchBar from "./components/SearchBar";
 import NewNoteButton from "./components/NewNoteButton";
+import NewNoteModal from "./components/NewNoteModal";
 
 export default function App() {
-  const notes = [
+  const [notes, setNotes] = useState([
     {
       id: 1,
       title: "Meeting with Team",
@@ -28,7 +30,30 @@ export default function App() {
       category: "Health",
       content: "Gym at 6 PM",
     },
-  ];
+  ]);
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    console.log("Note count:", notes.length);
+  }, [notes]);
+
+  function handleAddNote(newNote) {
+    setNotes((prev) => [...prev, { id: Date.now(), ...newNote }]);
+    setIsModalOpen(false);
+  }
+
+  function handleDeleteNote(id) {
+  const confirmed = window.confirm("Are you sure you want to delete this note?");
+  if (confirmed) {
+    setNotes((prev) => prev.filter((note) => note.id !== id));
+  }
+}
+
+  const filteredNotes = notes.filter((note) =>
+    note.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="min-h-screen bg-slate-900 p-6 md:p-10">
@@ -36,17 +61,24 @@ export default function App() {
 
         <header className="mb-10 border-b border-slate-700 pb-6">
           <h1 className="text-4xl font-extrabold text-emerald-400 tracking-tight">
-             Note Taker
+            Note Taker
           </h1>
           <p className="text-slate-400 mt-2">Your ideas, neatly organized.</p>
         </header>
 
         <div className="flex flex-col md:flex-row items-center gap-4 justify-between mb-10">
-          <SearchBar />
-          <NewNoteButton />
+          <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
+          <NewNoteButton onClick={() => setIsModalOpen(true)} />
         </div>
 
-        <NoteGrid notes={notes} />
+        <NoteGrid notes={filteredNotes} onDelete={handleDeleteNote} />
+
+        {isModalOpen && (
+          <NewNoteModal
+            onClose={() => setIsModalOpen(false)}
+            onAddNote={handleAddNote}
+          />
+        )}
 
       </div>
     </div>
