@@ -1,4 +1,4 @@
-export default function NoteCard({ note }) {
+export default function NoteCard({ note, onDelete }) {
 
   const badgeColor = {
     Work: "bg-blue-100 text-blue-700",
@@ -8,9 +8,16 @@ export default function NoteCard({ note }) {
   };
 
   return (
-    <div className="bg-white p-5 rounded-2xl shadow-lg hover:scale-105 transition">
+    <div className="bg-white p-5 rounded-2xl shadow-lg hover:scale-105 transition relative">
 
-      <h2 className="text-xl font-bold mb-3">
+      <button
+        onClick={() => onDelete(note.id)}
+        className="absolute top-5 right-5 text-red-500 hover:text-red-700 text-sm font-medium transition"
+      >
+        Delete
+      </button>
+
+      <h2 className="text-xl font-bold mb-3 pr-16">
         {note.title}
       </h2>
 
