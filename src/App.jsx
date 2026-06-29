@@ -1,4 +1,4 @@
-import NoteCard from "./components/NoteCard";
+import NoteGrid from "./components/NoteGrid";
 import SearchBar from "./components/SearchBar";
 import NewNoteButton from "./components/NewNoteButton";
 
@@ -46,11 +46,7 @@ export default function App() {
           <NewNoteButton />
         </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {notes.map((note) => (
-            <NoteCard key={note.id} note={note} />
-          ))}
-        </div>
+        <NoteGrid notes={notes} />
 
       </div>
     </div>
