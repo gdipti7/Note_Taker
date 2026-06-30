@@ -1,55 +1,19 @@
 import { useState, useEffect } from "react";
+import { BrowserRouter, Routes, Route, useNavigate } from "react-router-dom";
 import NoteGrid from "./components/NoteGrid";
 import SearchBar from "./components/SearchBar";
 import NewNoteButton from "./components/NewNoteButton";
-import NewNoteModal from "./components/NewNoteModal";
+import AddNotePage from "./pages/AddNotePage";
 
-export default function App() {
-  const [notes, setNotes] = useState([
-    {
-      id: 1,
-      title: "Meeting with Team",
-      category: "Work",
-      content: "Discuss project progress",
-    },
-    {
-      id: 2,
-      title: "Buy Groceries",
-      category: "Personal",
-      content: "Milk, Bread, Eggs",
-    },
-    {
-      id: 3,
-      title: "React Revision",
-      category: "Study",
-      content: "Hooks and Components",
-    },
-    {
-      id: 4,
-      title: "Workout Plan",
-      category: "Health",
-      content: "Gym at 6 PM",
-    },
-  ]);
+const initialNotes = [
+  { id: 1, title: "Meeting with Team", category: "Work", content: "Discuss project progress" },
+  { id: 2, title: "Buy Groceries", category: "Personal", content: "Milk, Bread, Eggs" },
+  { id: 3, title: "React Revision", category: "Study", content: "Hooks and Components" },
+  { id: 4, title: "Workout Plan", category: "Health", content: "Gym at 6 PM" },
+];
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
-
-  useEffect(() => {
-    console.log("Note count:", notes.length);
-  }, [notes]);
-
-  function handleAddNote(newNote) {
-    setNotes((prev) => [...prev, { id: Date.now(), ...newNote }]);
-    setIsModalOpen(false);
-  }
-
-  function handleDeleteNote(id) {
-  const confirmed = window.confirm("Are you sure you want to delete this note?");
-  if (confirmed) {
-    setNotes((prev) => prev.filter((note) => note.id !== id));
-  }
-}
+function Home({ notes, onDelete, searchTerm, setSearchTerm }) {
+  const navigate = useNavigate();
 
   const filteredNotes = notes.filter((note) =>
     note.title.toLowerCase().includes(searchTerm.toLowerCase())
@@ -68,19 +32,54 @@ export default function App() {
 
         <div className="flex flex-col md:flex-row items-center gap-4 justify-between mb-10">
           <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-          <NewNoteButton onClick={() => setIsModalOpen(true)} />
+          <NewNoteButton onClick={() => navigate("/add-note")} />
         </div>
 
-        <NoteGrid notes={filteredNotes} onDelete={handleDeleteNote} />
-
-        {isModalOpen && (
-          <NewNoteModal
-            onClose={() => setIsModalOpen(false)}
-            onAddNote={handleAddNote}
-          />
-        )}
+        <NoteGrid notes={filteredNotes} onDelete={onDelete} />
 
       </div>
     </div>
+  );
+}
+
+export default function App() {
+  const [notes, setNotes] = useState(initialNotes);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  useEffect(() => {
+    console.log("Note count:", notes.length);
+  }, [notes]);
+
+  function handleAddNote(newNote) {
+    setNotes((prev) => [...prev, { id: Date.now(), ...newNote }]);
+  }
+
+  function handleDeleteNote(id) {
+    const confirmed = window.confirm("Are you sure you want to delete this note?");
+    if (confirmed) {
+      setNotes((prev) => prev.filter((note) => note.id !== id));
+    }
+  }
+
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Home
+              notes={notes}
+              onDelete={handleDeleteNote}
+              searchTerm={searchTerm}
+              setSearchTerm={setSearchTerm}
+            />
+          }
+        />
+        <Route
+          path="/add-note"
+          element={<AddNotePage onAddNote={handleAddNote} />}
+        />
+      </Routes>
+    </BrowserRouter>
   );
 }
