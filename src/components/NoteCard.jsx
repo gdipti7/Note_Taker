@@ -16,7 +16,7 @@ export default function NoteCard({ note, onDelete, onClick }) {
       <button
         onClick={(e) => {
           e.stopPropagation();
-          onDelete(note.id);
+          onDelete(note._id);
         }}
         className="absolute top-5 right-5 text-red-500 hover:text-red-700 text-sm font-medium transition"
       >
