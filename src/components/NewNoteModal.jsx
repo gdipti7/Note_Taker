@@ -1,24 +1,27 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function NewNoteModal({ onClose, onAddNote }) {
+export default function AddNotePage({ onAddNote }) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("Personal");
   const [content, setContent] = useState("");
+  const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
-    onAddNote({ title, category, content });
+    await onAddNote({ title, category, content });
+    navigate("/");
   }
 
   return (
-    <div className="fixed inset-0 bg-black/60 flex items-center justify-center p-4 z-50">
+    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
       <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
 
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-bold text-emerald-600">Add New Note</h2>
           <button
-            onClick={onClose}
+            onClick={() => navigate("/")}
             className="text-gray-400 hover:text-gray-700 text-2xl leading-none"
           >
             &times;
@@ -65,7 +68,7 @@ export default function NewNoteModal({ onClose, onAddNote }) {
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
-              onClick={onClose}
+              onClick={() => navigate("/")}
               className="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition"
             >
               Cancel
