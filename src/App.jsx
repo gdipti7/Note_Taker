@@ -4,13 +4,7 @@ import NoteGrid from "./components/NoteGrid";
 import SearchBar from "./components/SearchBar";
 import NewNoteButton from "./components/NewNoteButton";
 import AddNotePage from "./pages/AddNotePage";
-
-const initialNotes = [
-  { id: 1, title: "Meeting with Team", category: "Work", content: "Discuss project progress" },
-  { id: 2, title: "Buy Groceries", category: "Personal", content: "Milk, Bread, Eggs" },
-  { id: 3, title: "React Revision", category: "Study", content: "Hooks and Components" },
-  { id: 4, title: "Workout Plan", category: "Health", content: "Gym at 6 PM" },
-];
+import { getAllNotes, createNote, deleteNote } from "./api/noteApi";
 
 function Home({ notes, onDelete, searchTerm, setSearchTerm }) {
   const navigate = useNavigate();
@@ -43,21 +37,40 @@ function Home({ notes, onDelete, searchTerm, setSearchTerm }) {
 }
 
 export default function App() {
-  const [notes, setNotes] = useState(initialNotes);
+  const [notes, setNotes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    console.log("Note count:", notes.length);
-  }, [notes]);
+    fetchNotes();
+  }, []);
 
-  function handleAddNote(newNote) {
-    setNotes((prev) => [...prev, { id: Date.now(), ...newNote }]);
+  async function fetchNotes() {
+    try {
+      const data = await getAllNotes();
+      setNotes(data);
+    } catch (error) {
+      console.error("Error fetching notes:", error);
+    }
   }
 
-  function handleDeleteNote(id) {
+  async function handleAddNote(newNote) {
+    try {
+      const savedNote = await createNote(newNote);
+      setNotes((prev) => [...prev, savedNote]);
+    } catch (error) {
+      console.error("Error adding note:", error);
+    }
+  }
+
+  async function handleDeleteNote(id) {
     const confirmed = window.confirm("Are you sure you want to delete this note?");
     if (confirmed) {
-      setNotes((prev) => prev.filter((note) => note.id !== id));
+      try {
+        await deleteNote(id);
+        setNotes((prev) => prev.filter((note) => note._id !== id));
+      } catch (error) {
+        console.error("Error deleting note:", error);
+      }
     }
   }
 
