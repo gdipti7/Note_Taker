@@ -1,33 +1,28 @@
 import axios from 'axios'
 
-const API_URL = 'http://localhost:5000/api/notes'
-
-const getAuthHeader = () => {
-  const token = localStorage.getItem('token')
-  return { headers: { Authorization: `Bearer ${token}` } }
-}
+const API_URL = '/api/notes'
 
 export const getAllNotes = async () => {
-  const response = await axios.get(API_URL)
+  const response = await axios.get(API_URL, { withCredentials: true })
   return response.data
 }
 
 export const getNoteById = async (id) => {
-  const response = await axios.get(`${API_URL}/${id}`)
+  const response = await axios.get(`${API_URL}/${id}`, { withCredentials: true })
   return response.data
 }
 
 export const createNote = async (noteData) => {
-  const response = await axios.post(API_URL, noteData, getAuthHeader())
+  const response = await axios.post(API_URL, noteData, { withCredentials: true })
   return response.data
 }
 
 export const updateNote = async (id, noteData) => {
-  const response = await axios.put(`${API_URL}/${id}`, noteData, getAuthHeader())
+  const response = await axios.put(`${API_URL}/${id}`, noteData, { withCredentials: true })
   return response.data
 }
 
 export const deleteNote = async (id) => {
-  const response = await axios.delete(`${API_URL}/${id}`, getAuthHeader())
+  const response = await axios.delete(`${API_URL}/${id}`, { withCredentials: true })
   return response.data
 }
