@@ -17,7 +17,6 @@ export default function LoginPage() {
     setError("");
     try {
       const data = await loginUser(formData);
-      localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       navigate("/");
     } catch (err) {
