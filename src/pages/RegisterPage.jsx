@@ -27,7 +27,6 @@ export default function RegisterPage() {
     setError("");
     try {
       const data = await registerUser(formData);
-      localStorage.setItem("token", data.token);
       localStorage.setItem("user", JSON.stringify(data.user));
       navigate("/");
     } catch (err) {
