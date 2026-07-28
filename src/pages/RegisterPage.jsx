@@ -13,6 +13,7 @@ export default function RegisterPage() {
     accept_terms: false,
   });
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -25,12 +26,15 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
     try {
       const data = await registerUser(formData);
       localStorage.setItem("user", JSON.stringify(data.user));
-      navigate("/");
+      navigate("/notes");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -125,9 +129,10 @@ export default function RegisterPage() {
 
           <button
             type="submit"
-            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2.5 rounded-xl shadow-lg transition-colors"
+            disabled={loading}
+            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-2.5 rounded-xl shadow-lg transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
           >
-            Register
+            {loading ? "Creating account..." : "Register"}
           </button>
         </form>
 
