@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const API_URL = '/api/notes'
+const API_URL = import.meta.env.VITE_API_URL || 'https://note-taker-backend-59x2.onrender.com/api/notes'
 
 export const getAllNotes = async () => {
   const response = await axios.get(API_URL, { withCredentials: true })
