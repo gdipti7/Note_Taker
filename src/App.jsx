@@ -6,10 +6,11 @@ import NewNoteButton from "./components/NewNoteButton";
 import AddNotePage from "./pages/AddNotePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import LandingPage from "./pages/LandingPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { getAllNotes, createNote, deleteNote } from "./api/noteApi";
 
-function Home({ notes, onDelete, searchTerm, setSearchTerm }) {
+function Home({ notes, onDelete, searchTerm, setSearchTerm, loading, error }) {
   const navigate = useNavigate();
 
   const filteredNotes = notes.filter((note) =>
@@ -44,7 +45,15 @@ function Home({ notes, onDelete, searchTerm, setSearchTerm }) {
           <NewNoteButton onClick={() => navigate("/add-note")} />
         </div>
 
-        <NoteGrid notes={filteredNotes} onDelete={onDelete} />
+        {loading && (
+          <p className="text-slate-400 text-center mt-10">Loading notes...</p>
+        )}
+
+        {error && (
+          <p className="text-red-400 text-center mt-10">{error}</p>
+        )}
+
+        {!loading && !error && <NoteGrid notes={filteredNotes} onDelete={onDelete} />}
       </div>
     </div>
   );
@@ -53,48 +62,64 @@ function Home({ notes, onDelete, searchTerm, setSearchTerm }) {
 export default function App() {
   const [notes, setNotes] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
 
   useEffect(() => {
     fetchNotes();
   }, []);
 
   async function fetchNotes() {
+    setLoading(true);
+    setError("");
     try {
       const data = await getAllNotes();
       setNotes(data);
-    } catch (error) {
-      console.error("Error fetching notes:", error);
+    } catch (err) {
+      setError("Failed to load notes. Please try again.");
+      console.error("Error fetching notes:", err);
+    } finally {
+      setLoading(false);
     }
   }
 
   async function handleAddNote(newNote) {
+    setError("");
     try {
       const savedNote = await createNote(newNote);
       setNotes((prev) => [...prev, savedNote]);
-    } catch (error) {
-      console.error("Error adding note:", error);
+    } catch (err) {
+      setError("Failed to add note. Please try again.");
+      console.error("Error adding note:", err);
+    } finally {
+      
     }
   }
 
   async function handleDeleteNote(id) {
     const confirmed = window.confirm("Are you sure you want to delete this note?");
-    if (confirmed) {
-      try {
-        await deleteNote(id);
-        setNotes((prev) => prev.filter((note) => note._id !== id));
-      } catch (error) {
-        console.error("Error deleting note:", error);
-      }
+    if (!confirmed) return;
+
+    setError("");
+    try {
+      await deleteNote(id);
+      setNotes((prev) => prev.filter((note) => note._id !== id));
+    } catch (err) {
+      setError("Failed to delete note. Please try again.");
+      console.error("Error deleting note:", err);
+    } finally {
+      
     }
   }
 
   return (
     <BrowserRouter>
       <Routes>
+        <Route path="/" element={<LandingPage />} />
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route
-          path="/"
+          path="/notes"
           element={
             <ProtectedRoute>
               <Home
@@ -102,6 +127,8 @@ export default function App() {
                 onDelete={handleDeleteNote}
                 searchTerm={searchTerm}
                 setSearchTerm={setSearchTerm}
+                loading={loading}
+                error={error}
               />
             </ProtectedRoute>
           }
