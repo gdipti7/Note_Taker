@@ -2,6 +2,9 @@ import axios from 'axios'
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://note-taker-backend-59x2.onrender.com/api/notes'
 
+
+const BASE_URL = API_URL.replace('/api/notes', '')
+
 export const getAllNotes = async () => {
   const response = await axios.get(API_URL, { withCredentials: true })
   return response.data
@@ -24,5 +27,14 @@ export const updateNote = async (id, noteData) => {
 
 export const deleteNote = async (id) => {
   const response = await axios.delete(`${API_URL}/${id}`, { withCredentials: true })
+  return response.data
+}
+
+export const summariseNote = async (content) => {
+  const response = await axios.post(
+    `${BASE_URL}/api/ai/summarise`,
+    { content },
+    { withCredentials: true }
+  )
   return response.data
 }
