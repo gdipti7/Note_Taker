@@ -7,6 +7,7 @@ import AddNotePage from "./pages/AddNotePage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import LandingPage from "./pages/LandingPage";
+import AskAIPage from "./pages/AskAIPage";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { getAllNotes, createNote, deleteNote } from "./api/noteApi";
 
@@ -42,7 +43,15 @@ function Home({ notes, onDelete, searchTerm, setSearchTerm, loading, error }) {
 
         <div className="flex flex-col md:flex-row items-center gap-4 justify-between mb-10">
           <SearchBar searchTerm={searchTerm} onSearchChange={setSearchTerm} />
-          <NewNoteButton onClick={() => navigate("/add-note")} />
+          <div className="flex gap-3">
+            <button
+              onClick={() => navigate("/ask-ai")}
+              className="border-2 border-emerald-500 text-emerald-400 hover:bg-emerald-500 hover:text-white px-6 py-3 rounded-xl transition-colors font-semibold"
+            >
+               Ask AI
+            </button>
+            <NewNoteButton onClick={() => navigate("/add-note")} />
+          </div>
         </div>
 
         {loading && (
@@ -84,31 +93,22 @@ export default function App() {
   }
 
   async function handleAddNote(newNote) {
-    setError("");
     try {
       const savedNote = await createNote(newNote);
       setNotes((prev) => [...prev, savedNote]);
     } catch (err) {
-      setError("Failed to add note. Please try again.");
       console.error("Error adding note:", err);
-    } finally {
-      
     }
   }
 
   async function handleDeleteNote(id) {
     const confirmed = window.confirm("Are you sure you want to delete this note?");
     if (!confirmed) return;
-
-    setError("");
     try {
       await deleteNote(id);
       setNotes((prev) => prev.filter((note) => note._id !== id));
     } catch (err) {
-      setError("Failed to delete note. Please try again.");
       console.error("Error deleting note:", err);
-    } finally {
-      
     }
   }
 
@@ -138,6 +138,14 @@ export default function App() {
           element={
             <ProtectedRoute>
               <AddNotePage onAddNote={handleAddNote} />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/ask-ai"
+          element={
+            <ProtectedRoute>
+              <AskAIPage />
             </ProtectedRoute>
           }
         />
