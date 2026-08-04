@@ -7,21 +7,21 @@ export default function AddNotePage({ onAddNote }) {
   const [content, setContent] = useState("");
   const navigate = useNavigate();
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
     if (!title.trim() || !content.trim()) return;
-    onAddNote({ title, category, content });
-    navigate("/");
+    await onAddNote({ title, category, content });
+    navigate("/notes");
   }
 
   return (
-    <div className="min-h-screen bg-slate-900 p-6 md:p-10">
-      <div className="max-w-md mx-auto bg-white rounded-2xl shadow-xl p-6">
+    <div className="min-h-screen bg-slate-900 flex items-center justify-center p-4">
+      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
 
         <div className="flex items-center justify-between mb-5">
           <h2 className="text-xl font-bold text-emerald-600">Add New Note</h2>
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/notes")}
             className="text-gray-400 hover:text-gray-700 text-2xl leading-none"
           >
             &times;
@@ -68,7 +68,7 @@ export default function AddNotePage({ onAddNote }) {
           <div className="flex justify-end gap-3 pt-2">
             <button
               type="button"
-              onClick={() => navigate("/")}
+              onClick={() => navigate("/notes")}
               className="px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-100 transition"
             >
               Cancel
